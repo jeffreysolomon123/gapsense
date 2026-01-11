@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
-import { InfoIcon } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
+import DashboardClient from "./DashboardClient";
 import { Suspense } from "react";
 
-async function UserDetails() {
+async function ProtectedDashboard() {
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
 
@@ -13,13 +12,13 @@ async function UserDetails() {
     redirect("/auth/login");
   }
 
-  return JSON.stringify(data.claims, null, 2);
+  return <DashboardClient />;
 }
 
-export default function ProtectedPage() {
+export default function DashboardPage() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      
-    </div>
+    <Suspense fallback={<div className="text-center mt-20">Loading...</div>}>
+      <ProtectedDashboard />
+    </Suspense>
   );
 }
