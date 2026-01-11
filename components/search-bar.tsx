@@ -54,7 +54,7 @@ export default function SearchBar({ query, setQuery, onSubmit }) {
 
       {/* Suggestions */}
       <div className="mt-6 flex gap-3 flex-wrap justify-center">
-        {["AI in Healthcare", "Climate Policy"].map((topic) => (
+        {["Carbon footprint prediction using ML", "Edge AI for IoT devices", "Wearable sensors for real-time health monitoring"].map((topic) => (
           <button
             key={topic}
             onClick={() => setQuery(topic)}

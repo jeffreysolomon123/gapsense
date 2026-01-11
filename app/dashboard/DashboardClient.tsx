@@ -15,10 +15,10 @@ export default function DashboardClient() {
       {/* Hero */}
       <div className="lg:mt-20 mt:15 self-center text-center space-y-3">
         <h2 className="text-4xl font-bold text-[#215E61] tracking-tight">
-          What research gap shall we bridge today?
+          Discover the research gaps nobody is talking about.
         </h2>
         <p className="text-[#215E61]/70 font-medium">
-          Enter a topic, abstract, or field of study to find unexplored opportunities.
+          #1 AI-powered research gap detection. Paste your topic or abstract to begin.
         </p>
       </div>
 

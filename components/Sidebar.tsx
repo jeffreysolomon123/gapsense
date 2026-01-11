@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { Gift } from 'lucide-react';
 
 // Define a Type for your search history
 type SearchHistory = {
@@ -18,8 +19,26 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     const [searches, setSearches] = useState<SearchHistory[]>([]); // New state for searches
+    const [credits, setCredits] = useState<number | null>(null);
     const router = useRouter();
+    useEffect(() => {
+    const fetchUsage = async () => {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
+        const { data, error } = await supabase
+            .from('usage')
+            .select('search_count')
+            .eq('user_id', user.id)
+            .single();
+
+        if (!error && data) {
+            setCredits(data.search_count);
+        }
+    };
+    fetchUsage();
+}, []);
     const logout = async () => {
         const supabase = createClient();
         await supabase.auth.signOut();
@@ -84,7 +103,7 @@ export default function Sidebar() {
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         onClick={toggleSidebar}
-                        className="fixed inset-0 bg-[#215E61]/20 z-40 backdrop-blur-sm"
+                        className="fixed inset-0 bg-[#215E61]/20 z-40 backdrop-blur-sm "
                     />
                 )}
             </AnimatePresence>
@@ -98,15 +117,15 @@ export default function Sidebar() {
                 transition={smoothTransition}
                 className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'} bg-[#121212] flex flex-col border-r border-[#215E61]/20 overflow-hidden shrink-0 shadow-2xl`}
             >
-                <Link href="/" className="hover:opacity-80 transition-opacity text-left ml-6 mt-6 mb-4 block">
+                {/* <Link href="/" className="hover:opacity-80 transition-opacity text-left ml-6 mt-6 mb-4 block">
                     <h2 className="text-xl font-bold tracking-tighter text-[#F5FBE6]">GapSense</h2>
-                </Link>
+                </Link> */}
 
                 <div className="p-4">
-                    <button className="flex items-center gap-3 w-full p-3 rounded-xl bg-[#215E61] text-[#F5FBE6] hover:bg-[#1a4a4d] transition-all font-semibold border border-[#215E61]/20">
+                    <Link href="/dashboard" className="flex items-center gap-3 w-full  rounded-md bg-[#215E61] p-1.5 px-4 text-[#F5FBE6] hover:bg-[#1a4a4d] transition-all font-semibold border border-[#215E61]/20">
                         <Plus size={18} strokeWidth={2.5} />
-                        <span className="text-sm">New Analysis</span>
-                    </button>
+                        <span className="text-sm ">New Analysis</span>
+                    </Link>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-2 space-y-1 custom-scrollbar">
@@ -131,16 +150,39 @@ export default function Sidebar() {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-[#215E61]/10 bg-black/20 space-y-1">
-                    <button className="flex items-center gap-3 w-full p-2.5 rounded-lg text-gray-400 hover:text-[#F5FBE6] transition-colors">
-                        <Settings size={18} />
-                        <span className="text-sm font-medium">Settings</span>
-                    </button>
-                    <button onClick={logout} className="flex items-center gap-3 w-full p-2.5 rounded-lg text-red-400/80 hover:text-red-400 transition-colors">
-                        <LogOut size={18} />
-                        <span className="text-sm font-medium">Log out</span>
-                    </button>
-                </div>
+                <div className="p-4 border-t border-[#215E61]/10 bg-black/5 space-y-3">
+                    {/* Credits Display Card */}
+                    <div className="px-3 py-3 rounded-md bg-black/5 border border-[#215E61] shadow-sm">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-[10px] font-bold text-[#cecece] uppercase tracking-wider">Usage</span>
+                            <span className="text-xs font-bold text-[#cecece]">{credits ?? 0} / 3 <span className="text-[10px] font-medium opacity-60">searches</span></span>
+                        </div>
+                        {/* Simple Progress Bar */}
+                        <div className="h-1.5 w-full bg-[#215E61]/5 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-[#cecece] transition-all duration-1000"
+                                style={{ width: `${Math.min(((credits ?? 0) / 3) * 100, 100)}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <Link href="/dashboard/request-searches" className="flex items-center gap-3 w-full p-2.5 rounded-lg text-[#b8963d] hover:bg-[#b8963d]/5 transition-colors group">
+                            <Gift size={18} className="group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium">Request More Searches</span>
+        </Link>
+        
+        <button className="flex items-center gap-3 w-full p-2.5 rounded-lg text-slate-500 hover:text-[#215E61] hover:bg-[#215E61]/5 transition-colors">
+            <Settings size={18} />
+            <span className="text-sm font-medium">Settings</span>
+        </button>
+        
+        <button onClick={logout} className="flex items-center gap-3 w-full p-2.5 rounded-lg text-red-500/70 hover:text-red-600 hover:bg-red-50 transition-colors">
+            <LogOut size={18} />
+            <span className="text-sm font-medium">Log out</span>
+        </button>
+    </div>
+</div>
             </motion.aside>
 
             <AnimatePresence>
@@ -152,7 +194,7 @@ export default function Sidebar() {
                         onClick={toggleSidebar}
                         className="fixed top-4 left-4 z-40 p-2.5 rounded-xl bg-[#215E61] text-[#F5FBE6] shadow-xl hover:bg-[#1a4a4d] transition-all border border-white/10"
                     >
-                        <PanelLeft size={20} />
+                        <PanelLeft size={17} />
                     </motion.button>
                 )}
             </AnimatePresence>

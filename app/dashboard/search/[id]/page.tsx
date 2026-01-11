@@ -44,16 +44,16 @@ export default function SearchDetailsPage() {
     );
 
     return (
-        <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-4 md:p-8 lg:p-12 overflow-y-auto">
+        <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-5 md:p-8 lg:p-12 overflow-y-auto">
             <div className="max-w-4xl mx-auto">
                 {/* Breadcrumb-style Header */}
-                <div className="flex items-center gap-2 text-[#215E61]/60 text-xs font-bold uppercase tracking-widest mb-6">
+                {/* <div className="flex items-center gap-2 text-[#215E61]/60 text-xs font-bold uppercase tracking-widest mb-6">
                     <span>Dashboard</span>
                     <ChevronRight size={12} />
                     <span>Archive</span>
                     <ChevronRight size={12} />
                     <span className="text-[#215E61]">Report #{id?.toString().slice(0, 8)}</span>
-                </div>
+                </div> */}
 
                 {/* Main Header */}
                 <header className="mb-10">
@@ -69,14 +69,14 @@ export default function SearchDetailsPage() {
                     
                     <div className="flex flex-wrap gap-2 mb-8">
                         {data.keywords?.map((tag: string, i: number) => (
-                            <span key={i} className="px-3 py-1 rounded-full bg-[#215E61]/5 border border-[#215E61]/20 text-[#215E61] text-[11px] font-bold uppercase tracking-wider">
+                            <span key={i} className="px-3 py-1 rounded-md bg-[#215E61]/5 border border-[#215E61]/20 text-[#215E61] text-[11px] font-bold uppercase tracking-wider">
                                 {tag}
                             </span>
                         ))}
                     </div>
 
                     {/* Metadata Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border border-[#215E61]/10 rounded-2xl bg-white shadow-sm overflow-hidden">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border border-[#215E61]/10 rounded-md bg-white shadow-sm overflow-hidden">
                         <div className="p-5 border-r border-b sm:border-b-0 border-[#215E61]/10">
                             <p className="text-[10px] uppercase tracking-widest text-[#215E61]/60 font-black mb-1">Domain</p>
                             <p className="text-sm font-bold text-slate-700">{data.domain}</p>
@@ -85,16 +85,13 @@ export default function SearchDetailsPage() {
                             <p className="text-[10px] uppercase tracking-widest text-[#215E61]/60 font-black mb-1">Category</p>
                             <p className="text-sm font-bold text-slate-700">{data.category}</p>
                         </div>
-                        <div className="p-5">
-                            <p className="text-[10px] uppercase tracking-widest text-[#215E61]/60 font-black mb-1">Methodology</p>
-                            <p className="text-sm font-mono text-slate-500">{data.model}</p>
-                        </div>
+                        
                     </div>
                 </header>
 
                 <main className="space-y-10">
                     {/* Report Content */}
-                    <article className="bg-white border border-[#215E61]/10 rounded-[32px] p-8 md:p-12 shadow-sm relative overflow-hidden">
+                    <article className="bg-white border border-[#215E61]/10 rounded-md p-8 md:p-12 shadow-sm relative overflow-hidden">
                         {/* Decorative background element */}
                         <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
                             <FileText size={200} />
@@ -120,7 +117,7 @@ export default function SearchDetailsPage() {
                     {/* Sources Section */}
                     <section className="pb-12">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-[#215E61] rounded-lg text-white">
+                            <div className="p-2 bg-[#215E61] rounded-md text-white">
                                 <BookOpen size={20} />
                             </div>
                             <h3 className="text-lg font-bold text-[#1a3a3a] uppercase tracking-tight">Source Material (arXiv)</h3>
@@ -133,7 +130,7 @@ export default function SearchDetailsPage() {
                                     href={link} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="group flex items-center justify-between p-4 rounded-xl bg-white border border-[#215E61]/10 hover:border-[#215E61] hover:shadow-md transition-all"
+                                    className="group flex items-center justify-between p-4 rounded-md bg-white border border-[#215E61]/10 hover:border-[#215E61]/40  transition-all"
                                 >
                                     <div className="flex flex-col overflow-hidden">
                                         <span className="text-[10px] font-bold text-[#215E61]/50 uppercase">Reference {i + 1}</span>

@@ -158,7 +158,7 @@ export function AnalysisSection({ query }) {
 
   if (status === "analyzing") {
     return (
-      <div className="w-full max-w-2xl mx-auto mt-16 px-4">
+      <div className="w-full max-w-2xl mx-auto mt-6 px-4">
         <div className="bg-white/80 rounded-[36px] p-8 shadow-xl backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-6">
             <Loader2 className="animate-spin text-[#215E61]" />
