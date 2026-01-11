@@ -203,7 +203,7 @@ export function AnalysisSection({ query }) {
       </div>
 
       <div className="bg-white rounded-[32px] shadow-xl p-8 md:p-12 text-left">
-        <SourcesGrid />
+        
         <hr className="mb-8 border-gray-100" />
         <ReactMarkdown
           components={{
@@ -218,7 +218,9 @@ export function AnalysisSection({ query }) {
         >
           {finalReport}
         </ReactMarkdown>
+           <SourcesGrid />
       </div>
+     
     </div>
   );
 }

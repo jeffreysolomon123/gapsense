@@ -13,7 +13,7 @@ export default function DashboardClient() {
     <div className="flex-1 w-full flex flex-col gap-12">
 
       {/* Hero */}
-      <div className="mb-10 text-center space-y-3">
+      <div className="lg:mt-20 mt:15 self-center text-center space-y-3">
         <h2 className="text-4xl font-bold text-[#215E61] tracking-tight">
           What research gap shall we bridge today?
         </h2>

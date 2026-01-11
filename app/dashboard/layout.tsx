@@ -30,7 +30,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {/* Centering the children properly */}
-          <div className="max-w-4xl mx-auto px-6 py-12 md:py-20 min-h-full flex flex-col justify-center">
+          <div className="max-w-full  px-6 py-12 md:py-5 min-h-full flex flex-col justify-center">
             <div className="w-full">
               {children}
             </div>
