@@ -1,20 +1,21 @@
 'use client'
-export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect,use } from 'react';
 import { createClient } from "@/lib/supabase/client";
 import { useParams } from 'next/navigation';
 import { BookOpen, Calendar, ExternalLink, Loader2, FileText, ChevronRight } from 'lucide-react';
 import ReactMarkdown from "react-markdown";
 
-export default function SearchDetailsPage() {
-    const params = useParams();
-    const id = params.id;
+export default function SearchDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = use(params);
+    const id = resolvedParams?.id;
 
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!id) return;
         const fetchDetails = async () => {
             if (!id) return;
             const supabase = createClient();
