@@ -13,7 +13,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import logo from "../app/logo.png"
+import Image from "next/image";
 export function SignUpForm({
   className,
   ...props
@@ -59,8 +60,17 @@ export function SignUpForm({
       <div className="max-w-[450px] w-full mx-auto">
         {/* Header Section */}
         <header className="mb-8 text-center">
+          <div className="flex justify-center mb-3">
+            <Link href="/" className="flex items-center gap-1 ">
+                <Image className="w-10 h-10"
+                  src={logo}
+                  alt="GapSense Logo"
+                />
+              <span className="text-lg md:text-xl font-black ">GapSense</span>
+            </Link>
+          </div>
           
-          <h1 className="text-3xl font-extrabold text-[#1a3a3a] mb-2">Join GapSense</h1>
+          <h1 className="text-3xl font-extrabold text-[#1a3a3a] mb-2">Sign Up</h1>
           <p className="text-slate-500 text-sm">Start identifying high-impact research gaps today.</p>
         </header>
 

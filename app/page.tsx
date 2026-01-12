@@ -2,6 +2,10 @@ import { Search, Zap, Microscope, BookOpen, ArrowRight, Bot } from "lucide-react
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import logo from "./logo.png";
+import Image from 'next/image';
+
+
 
 export default async function Home() {
   const supabase = await createClient();
@@ -18,10 +22,14 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto flex justify-between items-center h-16 px-4 md:px-6">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <div className="bg-[#215E61] p-1.5 rounded-lg">
-                <Zap size={18} className="text-white" fill="currentColor" />
+              <div className="p-1.5 rounded-lg">
+                {/* <Zap size={18} className="text-white" fill="currentColor" /> */}
+                <Image className="w-10 h-10"
+                  src={logo}
+                  alt="GapSense Logo"
+                />
               </div>
-              <span className="text-lg md:text-xl font-black tracking-tighter uppercase">GapSense</span>
+              <span className="text-lg md:text-xl font-black ">GapSense</span>
             </Link>
           </div>
 
@@ -78,7 +86,7 @@ export default async function Home() {
           </Link>
           
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">
-            <span className="flex items-center gap-2"><BookOpen size={14}/> Top 10 Contextual Papers</span>
+            <span className="flex items-center gap-2"><BookOpen size={14}/> Refer Top Contextual Papers</span>
             <span className="flex items-center gap-2"><Zap size={14} fill="currentColor"/> Automated Synthesis</span>
           </div>
         </div>
@@ -117,11 +125,15 @@ export default async function Home() {
       <footer className="py-12 px-6 border-t border-slate-100">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2 opacity-50">
-            <Zap size={16} fill="currentColor" />
+            {/* <Zap size={16} fill="currentColor" /> */}
+            <Image className="w-5 h-5"
+                  src={logo}
+                  alt="GapSense Logo"
+                />
             <span className="text-[10px] font-black uppercase tracking-widest">GapSense © 2026</span>
           </div>
           <p className="text-[11px] text-slate-400 font-medium text-center md:text-left">
-            Developed by <span className="text-slate-900 font-bold">Jeffrey Solomon</span>
+            Developed by <Link target="_blank" rel="noopener noreferrer" href="https://jeffreysolomon.vercel.app/" className="text-slate-900 font-bold">Jeffrey Solomon</Link>
           </p>
         </div>
       </footer>

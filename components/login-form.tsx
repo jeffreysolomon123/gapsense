@@ -13,7 +13,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import logo from "../app/logo.png";
+import Image from "next/image";
 export function LoginForm({
   className,
   ...props
@@ -53,6 +54,17 @@ export function LoginForm({
             <ShieldCheck size={16} />
             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Access</span>
           </div> */}
+
+          {/* logo with image and name */}
+          <div className="flex justify-center mb-3">
+            <Link href="/" className="flex items-center gap-1 ">
+                <Image className="w-10 h-10"
+                  src={logo}
+                  alt="GapSense Logo"
+                />
+              <span className="text-lg md:text-xl font-black ">GapSense</span>
+            </Link>
+          </div>
           <h1 className="text-3xl font-extrabold text-[#1a3a3a] mb-2">Welcome Back</h1>
           <p className="text-slate-500 text-sm">Enter your credentials to access the GapSense engine.</p>
         </header>

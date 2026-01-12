@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import Image from 'next/image';
+import logo from "../app/logo-white.png"
 
 type SearchHistory = {
     id: string;
@@ -96,12 +98,15 @@ export default function Sidebar() {
             >
                 {/* Header */}
                 <div className="h-16 flex items-center justify-between px-5 shrink-0">
-                    <Link href="/dashboard" className="flex items-center gap-2 group">
-                        <div className="bg-white/10 p-1 rounded-md border border-white/10">
-                            <Sparkles size={14} className="text-white/90" />
-                        </div>
-                        <span className="text-[11px] font-black tracking-[0.2em] text-white uppercase">GapSense</span>
-                    </Link>
+                    
+                    <div className="flex justify-center mb-3">
+            <Link href="/dashboard" className="flex items-center gap-1 mt-3">
+                <Image className="w-8 h-8"
+                  src={logo}
+                  alt="GapSense Logo"
+                />
+            </Link>
+          </div>
                     {isMobile && (
                         <button onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white">
                             <PanelLeft size={16} />
