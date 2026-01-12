@@ -5,33 +5,36 @@ import SearchBar from "@/components/search-bar";
 import { AnalysisSection } from "@/components/AnalysisStatus";
 
 export default function DashboardClient() {
-
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
-
-      {/* Hero */}
-      <div className="lg:mt-20 mt:15 self-center text-center space-y-3">
-        <h2 className="text-4xl font-bold text-[#215E61] tracking-tight">
-          Discover the research gaps nobody is talking about.
-        </h2>
-        <p className="text-[#215E61]/70 font-medium">
-          #1 AI-powered research gap detection. Paste your topic or abstract to begin.
-        </p>
-      </div>
-
+      {/* Hero: Only shows when NOT submitted */}
       {!submitted && (
-        <SearchBar
-          query={query}
-          setQuery={setQuery}
-          onSubmit={() => setSubmitted(true)}
-        />
+        <>
+          <div className="lg:mt-20 mt-15 self-center text-center space-y-3">
+            <h2 className="text-4xl font-bold text-[#215E61] tracking-tight">
+              Discover the research gaps nobody is talking about.
+            </h2>
+            <p className="text-[#215E61]/70 font-medium">
+              #1 AI-powered research gap detection. Paste your topic or abstract to begin.
+            </p>
+          </div>
+
+          <SearchBar
+            query={query}
+            setQuery={setQuery}
+            onSubmit={() => setSubmitted(true)}
+          />
+        </>
       )}
 
+      {/* Analysis: Shows only AFTER submission */}
       {submitted && (
-        <AnalysisSection query={query} />
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+           <AnalysisSection query={query} />
+        </div>
       )}
     </div>
   );

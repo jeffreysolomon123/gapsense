@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Plus, Settings, PanelLeft, LogOut } from 'lucide-react';
+import { MessageSquare, Plus, Settings, PanelLeft, LogOut, Sparkles, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { Gift } from 'lucide-react';
 
-// Define a Type for your search history
 type SearchHistory = {
     id: string;
     query: string;
@@ -18,92 +16,71 @@ type SearchHistory = {
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    const [searches, setSearches] = useState<SearchHistory[]>([]); // New state for searches
+    const [searches, setSearches] = useState<SearchHistory[]>([]);
     const [credits, setCredits] = useState<number | null>(null);
+    
     const router = useRouter();
+    const pathname = usePathname();
+
+    // Fixed: Define logic for active states outside of the JSX
+    const isSettingsActive = pathname === '/dashboard/settings';
+    const isRequestActive = pathname === '/dashboard/request-searches';
+
+    const slideTransition = {
+        type: "tween",
+        ease: [0.4, 0, 0.2, 1],
+        duration: 0.25
+    };
+
     useEffect(() => {
-    const fetchUsage = async () => {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (isMobile && isOpen) setIsOpen(false);
+    }, [pathname, isMobile]);
 
-        const { data, error } = await supabase
-            .from('usage')
-            .select('search_count')
-            .eq('user_id', user.id)
-            .single();
+    useEffect(() => {
+        const fetchData = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-        if (!error && data) {
-            setCredits(data.search_count);
-        }
-    };
-    fetchUsage();
-}, []);
-    const logout = async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        router.push("/auth/login");
-    };
+            const [usageRes, searchRes] = await Promise.all([
+                supabase.from('usage').select('search_count').eq('user_id', user.id).single(),
+                supabase.from('searches').select('id, query, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10)
+            ]);
+
+            if (usageRes.data) setCredits(usageRes.data.search_count);
+            if (searchRes.data) setSearches(searchRes.data);
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const checkMobile = () => {
-            const mobile = window.innerWidth < 768;
+            const mobile = window.innerWidth < 1024;
             setIsMobile(mobile);
-            if (mobile) setIsOpen(false);
-            else setIsOpen(true);
+            setIsOpen(!mobile);
         };
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    useEffect(() => {
-        const fetchSearched = async () => {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            const { data, error } = await supabase
-                .from('searches')
-                .select('id, user_id, query, created_at')
-                .eq('user_id', user?.id)
-                .order('created_at', { ascending: false }); // Sort by newest
-
-            if (error) {
-                console.error('Error fetching searched:', error.message);
-                return;
-            }
-            if (data) setSearches(data);
-        };
-        fetchSearched();
-    }, []);
-
-    const toggleSidebar = () => setIsOpen(!isOpen);
-
-    const smoothTransition = {
-        type: "tween",
-        ease: "easeOut",
-        duration: 0.3,
-    };
-
-    // Helper to format date
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric'
-        });
+    const logout = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push("/auth/login");
     };
 
     return (
         <>
+            {/* Mobile Overlay */}
             <AnimatePresence>
                 {isMobile && isOpen && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        onClick={toggleSidebar}
-                        className="fixed inset-0 bg-[#215E61]/20 z-40 backdrop-blur-sm "
+                        onClick={() => setIsOpen(false)}
+                        className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
                     />
                 )}
             </AnimatePresence>
@@ -111,90 +88,117 @@ export default function Sidebar() {
             <motion.aside
                 initial={false}
                 animate={{
-                    width: isOpen ? (isMobile ? "280px" : "260px") : "0px",
-                    x: isMobile && !isOpen ? -280 : 0
+                    width: isOpen ? "260px" : "0px",
+                    x: isMobile && !isOpen ? -260 : 0
                 }}
-                transition={smoothTransition}
-                className={`${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'} bg-[#121212] flex flex-col border-r border-[#215E61]/20 overflow-hidden shrink-0 shadow-2xl`}
+                transition={slideTransition}
+                className="fixed inset-y-0 left-0 lg:relative z-50 bg-[#215E61] flex flex-col border-r border-white/10 overflow-hidden"
             >
-                {/* <Link href="/" className="hover:opacity-80 transition-opacity text-left ml-6 mt-6 mb-4 block">
-                    <h2 className="text-xl font-bold tracking-tighter text-[#F5FBE6]">GapSense</h2>
-                </Link> */}
+                {/* Header */}
+                <div className="h-16 flex items-center justify-between px-5 shrink-0">
+                    <Link href="/dashboard" className="flex items-center gap-2 group">
+                        <div className="bg-white/10 p-1 rounded-md border border-white/10">
+                            <Sparkles size={14} className="text-white/90" />
+                        </div>
+                        <span className="text-[11px] font-black tracking-[0.2em] text-white uppercase">GapSense</span>
+                    </Link>
+                    {isMobile && (
+                        <button onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white">
+                            <PanelLeft size={16} />
+                        </button>
+                    )}
+                </div>
 
-                <div className="p-4">
-                    <Link href="/dashboard" className="flex items-center gap-3 w-full  rounded-md bg-[#215E61] p-1.5 px-4 text-[#F5FBE6] hover:bg-[#1a4a4d] transition-all font-semibold border border-[#215E61]/20">
-                        <Plus size={18} strokeWidth={2.5} />
-                        <span className="text-sm ">New Analysis</span>
+                {/* Primary Action */}
+                <div className="px-4 mb-4 shrink-0">
+                    <Link href="/dashboard" className="flex items-center justify-center gap-2 w-full py-2 rounded-md bg-[#F5FBE6] text-[#215E61] hover:bg-white transition-all text-[11px] font-bold uppercase tracking-wider">
+                        <Plus size={14} strokeWidth={3} />
+                        New Analysis
                     </Link>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-2 space-y-1 custom-scrollbar">
-                    <p className="px-3 py-4 text-[10px] font-bold text-[#215E61] uppercase tracking-[0.2em]">Recent History</p>
+                {/* Navigation */}
+                <nav className="flex-1 overflow-y-auto px-2 space-y-0.5 custom-scrollbar">
+                    <p className="px-3 py-4 text-[11px] font-bold text-white/30">Recent Searches</p>
                     
-                    {searches.map((item) => (
-                        <Link 
-                            key={item.id} 
-                            href={`/dashboard/search/${item.id}`}
-                            className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-[#215E61]/10 group transition-colors text-left"
-                        >
-                            <div className="flex items-center gap-3 overflow-hidden">
-                                <MessageSquare size={18} className="shrink-0 text-[#215E61]/50 group-hover:text-[#215E61]" />
-                                <span className="text-sm truncate text-gray-400 group-hover:text-[#F5FBE6]">
-                                    {item.query || "Untitled Search"}
+                    {searches.map((item) => {
+                        const isActive = pathname === `/dashboard/search/${item.id}`;
+                        return (
+                            <Link 
+                                key={item.id} 
+                                href={`/dashboard/search/${item.id}`}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all group
+                                ${isActive ? 'bg-white/10 border-l-2 border-white' : 'hover:bg-white/5 border-l-2 border-transparent'}`}
+                            >
+                                <MessageSquare size={13} className={isActive ? 'text-white' : 'text-white/30 group-hover:text-white/60'} />
+                                <span className={`text-[12px] truncate ${isActive ? 'text-white font-medium' : 'text-white/50 group-hover:text-white/80'}`}>
+                                    {item.query || "Untitled"}
                                 </span>
-                            </div>
-                            <span className="text-[10px] text-gray-400 group-hover:text-[#F5FBE6] whitespace-nowrap ml-2">
-                                {formatDate(item.created_at)}
-                            </span>
-                        </Link>
-                    ))}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
-                <div className="p-4 border-t border-[#215E61]/10 bg-black/5 space-y-3">
-                    {/* Credits Display Card */}
-                    <div className="px-3 py-3 rounded-md bg-black/5 border border-[#215E61] shadow-sm">
+                {/* Footer */}
+                <div className="p-3 bg-black/5 border-t border-white/5 space-y-3 shrink-0">
+                    
+                    {/* Usage Card */}
+                    <div className="px-3 py-3 rounded-md bg-white/5 border border-white/5">
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-bold text-[#cecece] uppercase tracking-wider">Usage</span>
-                            <span className="text-xs font-bold text-[#cecece]">{credits ?? 0} / 3 <span className="text-[10px] font-medium opacity-60">searches</span></span>
+                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-tighter">Usage</span>
+                            <span className="text-[10px] font-medium text-white/90 uppercase tracking-tighter">{credits ?? 0} / 3</span>
                         </div>
-                        {/* Simple Progress Bar */}
-                        <div className="h-1.5 w-full bg-[#215E61]/5 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-[#cecece] transition-all duration-1000"
-                                style={{ width: `${Math.min(((credits ?? 0) / 3) * 100, 100)}%` }}
+                        <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(((credits ?? 0) / 3) * 100, 100)}%` }}
+                                transition={slideTransition}
+                                className="h-full bg-white/80"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-1">
-                        <Link href="/dashboard/request-searches" className="flex items-center gap-3 w-full p-2.5 rounded-lg text-[#b8963d] hover:bg-[#b8963d]/5 transition-colors group">
-                            <Gift size={18} className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium">Request More Searches</span>
-        </Link>
-        
-        <button className="flex items-center gap-3 w-full p-2.5 rounded-lg text-slate-500 hover:text-[#215E61] hover:bg-[#215E61]/5 transition-colors">
-            <Settings size={18} />
-            <span className="text-sm font-medium">Settings</span>
-        </button>
-        
-        <button onClick={logout} className="flex items-center gap-3 w-full p-2.5 rounded-lg text-red-500/70 hover:text-red-600 hover:bg-red-50 transition-colors">
-            <LogOut size={18} />
-            <span className="text-sm font-medium">Log out</span>
-        </button>
-    </div>
-</div>
+                    <div className="space-y-0.5">
+                        <Link 
+                            href="/dashboard/request-searches" 
+                            className={`flex items-center gap-3 px-3 py-2 mb-2 text-[12px] rounded-md transition-all 
+                            ${isRequestActive ? 'bg-white/10 text-white border-l-2 border-white' : 'text-white/50 hover:text-white hover:bg-white/5 border-l-2 border-transparent'}`}
+                        >
+                            <Gift  size={14} />
+                            <span>Request More Searches</span>
+                        </Link>
+                        <Link 
+                            href="/dashboard/settings" 
+                            className={`flex items-center gap-3 px-3 py-2 text-[12px] rounded-md transition-all 
+                            ${isSettingsActive ? 'bg-white/10 text-white border-l-2 border-white' : 'text-white/50 hover:text-white hover:bg-white/5 border-l-2 border-transparent'}`}
+                        >
+                            <Settings size={14} />
+                            <span>Settings</span>
+                        </Link>
+                        
+                        <button 
+                            onClick={logout} 
+                            className="flex items-center gap-3 px-3 py-2 w-full text-[12px] text-white/30 hover:text-white hover:bg-red-400/10 rounded-md transition-all text-left border-l-2 border-transparent"
+                        >
+                            <LogOut size={14} />
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
             </motion.aside>
 
+            {/* Mobile Toggle Trigger */}
             <AnimatePresence>
-                {!isOpen && (
+                {!isOpen && isMobile && (
                     <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        onClick={toggleSidebar}
-                        className="fixed top-4 left-4 z-40 p-2.5 rounded-xl bg-[#215E61] text-[#F5FBE6] shadow-xl hover:bg-[#1a4a4d] transition-all border border-white/10"
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -5 }}
+                        transition={slideTransition}
+                        onClick={() => setIsOpen(true)}
+                        className="fixed top-4 left-4 z-40 p-2 rounded-md bg-[#215E61] text-white border border-white/10 shadow-lg"
                     >
-                        <PanelLeft size={17} />
+                        <PanelLeft size={18} />
                     </motion.button>
                 )}
             </AnimatePresence>

@@ -15,8 +15,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       <Sidebar />
 
       {/* The main area has your specific brand color background */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#F5FBE6] relative">
-        <nav className="w-full flex justify-center border-b border-[#215E61]/10 h-16 shrink-0 z-30 bg-[#F5FBE6] backdrop-blur-md">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#F9FBFB] relative">
+        <nav className="w-full flex justify-center border-b border-[#215E61]/10 h-16 shrink-0 z-30 bg-[#F9FBFB] backdrop-blur-md">
           <div className="w-full px-6 flex justify-end gap-6 lg:justify-between items-center">
             <Link href="/" className="hover:opacity-80 transition-opacity ">
               <h2 className="text-xl font-bold tracking-tighter text-[#215E61]">GapSense</h2>
@@ -41,11 +41,11 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
               {children}
             </div>
             
-            <footer className="mt-auto pt-20 pb-10 text-center">
+            {/* <footer className="pb-10 text-center">
               <p className="text-xs font-semibold text-[#215E61] opacity-40 uppercase tracking-widest">
-                Developed by Jeffrey Solomon
+                GapSense.xyz
               </p>
-            </footer>
+            </footer> */}
           </div>
         </div>
       </main>

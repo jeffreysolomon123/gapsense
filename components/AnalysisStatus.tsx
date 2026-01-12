@@ -1,17 +1,21 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Check, ExternalLink, BookOpen } from "lucide-react";
+import { Loader2, Check, ExternalLink, BookOpen, FileText, Calendar } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/client";
+import { LimitModal } from "./LimitModal";
+
 
 export function AnalysisSection({ query }) {
   const [userId, setUserId] = useState<string | null>(null);
-  const [authLoading, setAuthLoading] = useState(true); // New loading state
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [status, setStatus] = useState("analyzing");
   const [currentStep, setCurrentStep] = useState(0);
   const [finalReport, setFinalReport] = useState("");
   const [paperLinks, setPaperLinks] = useState<string[]>([]);
+  const [search_count, setSearch_count] = useState<number>(0);
   
   const socketRef = useRef<WebSocket | null>(null);
   const supabase = createClient();
@@ -24,17 +28,11 @@ export function AnalysisSection({ query }) {
     "Generating your report",
   ];
 
-  // 1. Correctly fetch user on mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setUserId(user.id);
-          console.log("✅ Supabase User Found:", user.id);
-        } else {
-          console.log("❌ No Supabase user logged in");
-        }
+        if (user) setUserId(user.id);
       } catch (err) {
         console.error("Auth error:", err);
       } finally {
@@ -45,38 +43,49 @@ export function AnalysisSection({ query }) {
   }, []);
 
   async function startAnalysis(id: string) {
-    console.log("🚀 Starting analysis for connection:", id);
     try {
-      const response = await fetch("http://localhost:8000/start-analysis", {
+      const { data, error } = await supabase
+        .from('usage')
+        .select('search_count')
+        .eq('user_id', userId)
+        .single();
+      // setSearch_count(data?.search_count || 0);
+      // console.log("Usage data:", search_count, error);
+      if (data?.search_count >= 3) {
+        setShowLimitModal(true); // Show modal instead of alert
+        setStatus("error");
+        return;
+      }
+
+
+      if (error || !data) {
+        alert("Error checking usage: " + (error?.message || "No data"));
+        setStatus("error");
+        return;
+      }
+      await fetch("http://localhost:8000/start-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           connection_id: id,
           query: query,
-          user_id: userId // Passing the Supabase UUID
+          user_id: userId
         }),
       });
-      const data = await response.json();
-      console.log("📡 Backend response:", data);
     } catch (e) {
       console.error("POST failed", e);
     }
   }
 
-  // 2. WebSocket Logic - Changed dependency from session to userId
   useEffect(() => {
-    // Only run if we have a userId and haven't started a socket yet
     if (socketRef.current || authLoading || !userId) return;
 
     setCurrentStep(0);
     setFinalReport("");
     setStatus("analyzing");
 
-    console.log("🔌 Connecting to WebSocket...");
     const ws = new WebSocket("ws://localhost:8000/ws");
     socketRef.current = ws;
-
-    ws.onopen = () => console.log("✅ WS Connected");
 
     ws.onmessage = (e) => {
       const msg = e.data;
@@ -89,8 +98,7 @@ export function AnalysisSection({ query }) {
         return;
       }
       if (msg.startsWith("LINKS::")) {
-        const links = JSON.parse(msg.replace("LINKS::", ""));
-        setPaperLinks(links);
+        setPaperLinks(JSON.parse(msg.replace("LINKS::", "")));
         return;
       }
       if (msg.startsWith("REPORT::")) {
@@ -105,12 +113,8 @@ export function AnalysisSection({ query }) {
       }
 
       const idx = steps.indexOf(msg);
-      if (idx !== -1) {
-        setCurrentStep(idx + 1);
-      }
+      if (idx !== -1) setCurrentStep(idx + 1);
     };
-
-    ws.onerror = (err) => console.error("WS Socket Error:", err);
 
     return () => {
       if (socketRef.current) {
@@ -118,109 +122,171 @@ export function AnalysisSection({ query }) {
         socketRef.current = null;
       }
     };
-  }, [userId, authLoading]); // Trigger when userId is finally fetched
+  }, [userId, authLoading]);
+
+  const progress = Math.min((currentStep / steps.length) * 100, 100);
 
   const SourcesGrid = () => (
-    <div className="mb-8">
-      <div className="flex items-center gap-2 mb-3 text-[#215E61] font-semibold">
-        <BookOpen size={18} />
-        <span>Sources ({paperLinks.length})</span>
+    <section className="mt-12">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-[#215E61] rounded-md text-white">
+          <BookOpen size={20} />
+        </div>
+        <h3 className="text-lg font-bold text-[#1a3a3a] uppercase tracking-tight">
+          Source Material (arXiv)
+        </h3>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {paperLinks.map((link, i) => (
           <a
             key={i}
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col p-3 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow group"
+            className="group flex items-center justify-between p-4 rounded-md bg-white border border-[#215E61]/10 hover:border-[#215E61]/40 transition-all shadow-sm"
           >
-            <span className="text-[10px] text-gray-400 font-medium mb-1 uppercase tracking-wider">
-              ArXiv Paper {i + 1}
-            </span>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-[#215E61] truncate font-medium">
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-[10px] font-bold text-[#215E61]/50 uppercase">
+                Reference {i + 1}
+              </span>
+              <span className="text-xs font-mono text-slate-500 group-hover:text-[#215E61] truncate">
                 {link.split('/').pop()}
               </span>
-              <ExternalLink size={12} className="text-gray-300 group-hover:text-[#215E61] shrink-0" />
             </div>
+            <ExternalLink size={14} className="text-[#215E61]/30 group-hover:text-[#215E61] transition-colors shrink-0" />
           </a>
         ))}
+      </div>
+    </section>
+  );
+
+  if (authLoading) return (
+    <div className="flex min-h-[60vh] items-center justify-center bg-[#F9FBFB]">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="h-10 w-10 text-[#215E61] animate-spin" />
+        <p className="text-[#215E61] font-medium animate-pulse">Verifying session...</p>
       </div>
     </div>
   );
 
-  const progress = Math.min((currentStep / steps.length) * 100, 100);
-
-  // 3. Updated render logic
-  if (authLoading) return <div className="text-center mt-20 text-[#215E61]">Verifying session...</div>;
-  if (!userId) return <div className="text-center mt-20 text-red-500">Please log in via Supabase to start analysis.</div>;
+  if (!userId) return (
+    <div className="min-h-[40vh] flex items-center justify-center bg-[#F9FBFB]">
+      <p className="text-red-500 font-medium">Please log in via Supabase to start analysis.</p>
+    </div>
+  );
 
   if (status === "analyzing") {
     return (
-      <div className="w-full max-w-2xl mx-auto mt-6 px-4">
-        <div className="bg-white/80 rounded-[36px] p-8 shadow-xl backdrop-blur-sm">
-          <div className="flex items-center gap-3 mb-6">
-            <Loader2 className="animate-spin text-[#215E61]" />
-            <div>
-              <h3 className="font-bold text-[#215E61]">GapSense is analyzing</h3>
-              <p className="text-xs text-[#215E61]/50">Processing your query...</p>
+      <div className="min-h-screen bg-[#F9FBFB] p-5 md:p-8 lg:p-12">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white border border-[#215E61]/10 rounded-md p-8 md:p-12 shadow-sm">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-3 bg-[#215E61]/5 rounded-full">
+                <Loader2 className="h-6 w-6 text-[#215E61] animate-spin" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[#1a3a3a]">GapSense Analysis in Progress</h3>
+                <p className="text-sm text-slate-500">Synthesizing real-time research data...</p>
+              </div>
             </div>
-          </div>
 
-          <div className="h-2 bg-[#215E61]/10 rounded-full mb-8">
-            <div className="h-full bg-[#215E61] transition-all duration-500" style={{ width: `${progress}%` }} />
-          </div>
+            <div className="relative h-2 bg-[#215E61]/5 rounded-full mb-10 overflow-hidden">
+              <div 
+                className="absolute top-0 left-0 h-full bg-[#215E61] transition-all duration-500" 
+                style={{ width: `${progress}%` }} 
+              />
+            </div>
 
-          <div className="space-y-5 mb-8">
-            {steps.map((step, i) => {
-              const done = i < currentStep;
-              return (
-                <div key={i} className="flex gap-4 items-center">
-                  <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] ${done ? "bg-green-500 text-white" : "border-2 border-gray-200 text-gray-400"}`}>
-                    {done ? <Check size={12} /> : i + 1}
+            <div className="space-y-6">
+              {steps.map((step, i) => {
+                const done = i < currentStep;
+                const active = i === currentStep;
+                return (
+                  <div key={i} className="flex gap-4 items-center">
+                    <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                      done ? "bg-[#215E61] text-white" : 
+                      active ? "border-2 border-[#215E61] text-[#215E61] animate-pulse" : 
+                      "border border-slate-200 text-slate-300"
+                    }`}>
+                      {done ? <Check size={14} strokeWidth={3} /> : i + 1}
+                    </div>
+                    <span className={`text-sm font-semibold tracking-tight ${
+                      done ? "text-[#215E61]" : 
+                      active ? "text-[#1a3a3a]" : 
+                      "text-slate-300"
+                    }`}>
+                      {step}
+                    </span>
                   </div>
-                  <span className={`text-sm ${done ? "text-[#215E61] font-medium" : "text-gray-400"}`}>{step}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {paperLinks.length > 0 && (
-             <div className="pt-6 border-t border-gray-100">
+                );
+              })}
+            </div>
+            
+            {paperLinks.length > 0 && (
+              <div className="mt-10 pt-10 border-t border-[#215E61]/10">
                 <SourcesGrid />
-             </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-20 px-4 pb-20">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold text-[#215E61]">Analysis Completed 🎉</h1>
-      </div>
+    <>
+    <LimitModal isOpen={showLimitModal} />
+    <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-5 md:p-8 lg:p-12">
+      
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-10 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-2 text-[#215E61] mb-3">
+            <Calendar size={16} />
+            <span className="text-sm font-semibold uppercase tracking-wider">
+              {new Date().toLocaleDateString(undefined, { dateStyle: 'long' })}
+            </span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1a3a3a] leading-tight mb-4">
+            {query}
+          </h1>
+          <div className="flex items-center justify-center md:justify-start gap-2">
+            <span className="px-3 py-1 rounded-md bg-[#215E61]/5 border border-[#215E61]/20 text-[#215E61] text-[11px] font-bold uppercase tracking-wider">
+              Live Analysis
+            </span>
+            <span className="px-3 py-1 rounded-md bg-[#215E61]/5 border border-[#215E61]/20 text-[#215E61] text-[11px] font-bold uppercase tracking-wider">
+              {paperLinks.length} Sources
+            </span>
+          </div>
+        </header>
 
-      <div className="bg-white rounded-[32px] shadow-xl p-8 md:p-12 text-left">
-        
-        <hr className="mb-8 border-gray-100" />
-        <ReactMarkdown
-          components={{
-            h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-[#215E61] mt-8 mb-4" {...props} />,
-            h2: ({node, ...props}) => <h2 className="text-2xl font-semibold text-[#215E61] mt-8 mb-4 " {...props} />,
-            h3: ({node, ...props}) => <h3 className="text-xl font-semibold text-[#215E61] mt-6 mb-2" {...props} />,
-            p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed mb-4 " {...props} />,
-            ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
-            li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
-            strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
-          }}
-        >
-          {finalReport}
-        </ReactMarkdown>
-           <SourcesGrid />
+        <main>
+          <article className="bg-white border border-[#215E61]/10 rounded-md p-8 md:p-12 shadow-sm relative overflow-hidden mb-10">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+              <FileText size={200} />
+            </div>
+
+            <div className="prose prose-slate max-w-none prose-headings:text-[#215E61] prose-headings:font-bold prose-strong:text-[#215E61] prose-a:text-[#215E61]">
+              <ReactMarkdown
+                components={{
+                  h1: ({...props}) => <h1 className="text-3xl mb-6 border-b pb-4 border-[#215E61]/10" {...props} />,
+                  h2: ({...props}) => <h2 className="text-2xl mt-10 mb-4" {...props} />,
+                  h3: ({...props}) => <h3 className="text-xl mt-8 mb-3" {...props} />,
+                  p: ({...props}) => <p className="text-slate-600 leading-relaxed mb-6" {...props} />,
+                  ul: ({...props}) => <ul className="list-disc pl-5 space-y-3 mb-6" {...props} />,
+                  li: ({...props}) => <li className="text-slate-600" {...props} />,
+                  hr: () => <hr className="my-10 border-[#215E61]/10" />,
+                }}
+              >
+                {finalReport}
+              </ReactMarkdown>
+            </div>
+          </article>
+
+          {paperLinks.length > 0 && <SourcesGrid />}
+        </main>
       </div>
-     
     </div>
+    </>
+    
   );
 }

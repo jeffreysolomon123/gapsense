@@ -15,7 +15,7 @@ export default function SearchBar({ query, setQuery, onSubmit }) {
   }
 
   return (
-    <div className="w-full max-w-3xl px-6 flex flex-col items-center self-center bg-[#F5FBE6] rounded-2xl">
+    <div className="w-full max-w-3xl px-6 flex flex-col items-center self-center bg-[#F9FBFB] rounded-2xl">
 
       <div className="w-full bg-white h-[35vh] lg:h-[20vh] rounded-2xl border-2 
       border-[#215E61]/20 focus-within:border-[#215E61] 
