@@ -6,8 +6,11 @@ import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/client";
 import { LimitModal } from "./LimitModal";
 
+interface AnalysisSectionProps {
+  query: string;
+}
 
-export function AnalysisSection({ query }) {
+export function AnalysisSection({ query }: AnalysisSectionProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
