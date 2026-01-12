@@ -2,12 +2,18 @@
 
 import { ArrowUp } from "lucide-react";
 
-export default function SearchBar({ query, setQuery, onSubmit }) {
+interface SearchBarProps {
+  query: string;
+  setQuery: (query: string) => void;
+  onSubmit: () => void;
+}
+
+export default function SearchBar({ query, setQuery, onSubmit }: SearchBarProps) {
 
   const limit = 200;
   const isTyping = query.length > 0;
 
-  function handleKeyDown(e) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey && isTyping) {
       e.preventDefault();
       onSubmit();
