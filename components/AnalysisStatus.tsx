@@ -46,39 +46,37 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
   }, []);
 
   async function startAnalysis(id: string) {
-    try {
-      const { data, error } = await supabase
-        .from('usage')
-        .select('search_count')
-        .eq('user_id', userId)
-        .single();
-      // setSearch_count(data?.search_count || 0);
-      // console.log("Usage data:", search_count, error);
-      if (data?.search_count >= 3) {
-        setShowLimitModal(true); // Show modal instead of alert
-        setStatus("error");
-        return;
-      }
+  try {
+    const { data, error } = await supabase
+      .from('usage')
+      .select('search_count')
+      .eq('user_id', userId)
+      .single();
 
-
-      if (error || !data) {
-        alert("Error checking usage: " + (error?.message || "No data"));
-        setStatus("error");
-        return;
-      }
-      await fetch("http://localhost:8000/start-analysis", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          connection_id: id,
-          query: query,
-          user_id: userId
-        }),
-      });
-    } catch (e) {
-      console.error("POST failed", e);
+    if (data?.search_count >= 3) {
+      setShowLimitModal(true);
+      setStatus("error");
+      return;
     }
+
+    // Determine the URL based on environment
+    const baseUrl = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'deployment' 
+      ? process.env.NEXT_PUBLIC_BACKEND_URL 
+      : process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL;
+
+    await fetch(`${baseUrl}/start-analysis`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        connection_id: id,
+        query: query,
+        user_id: userId
+      }),
+    });
+  } catch (e) {
+    console.error("POST failed", e);
   }
+}
 
   useEffect(() => {
     if (socketRef.current || authLoading || !userId) return;
@@ -87,8 +85,17 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
     setFinalReport("");
     setStatus("analyzing");
 
-    const ws = new WebSocket("ws://localhost:8000/ws");
-    socketRef.current = ws;
+    // Logic to handle ws:// vs wss://
+  const isDeploy = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'deployment';
+  const rawUrl = isDeploy 
+    ? process.env.NEXT_PUBLIC_BACKEND_URL 
+    : process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL;
+
+  // Convert http/https to ws/wss
+  const wsUrl = rawUrl?.replace(/^http/, 'ws') + "/ws";
+
+  const ws = new WebSocket(wsUrl);
+  socketRef.current = ws;
 
     ws.onmessage = (e) => {
       const msg = e.data;
