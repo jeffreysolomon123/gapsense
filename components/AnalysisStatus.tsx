@@ -19,6 +19,8 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
   const [finalReport, setFinalReport] = useState("");
   const [paperLinks, setPaperLinks] = useState<string[]>([]);
   const [search_count, setSearch_count] = useState<number>(0);
+  const [isWakingUp, setIsWakingUp] = useState(false);
+const [serverReady, setServerReady] = useState(false);
   
   const socketRef = useRef<WebSocket | null>(null);
   const supabase = createClient();
@@ -30,6 +32,33 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
     "Identifying hidden gaps",
     "Generating your report",
   ];
+
+
+
+  useEffect(() => {
+  const wakeServer = async () => {
+    const isDeploy = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'deployment';
+    const baseUrl = isDeploy 
+      ? process.env.NEXT_PUBLIC_BACKEND_URL 
+      : "http://localhost:8000";
+
+    if (!baseUrl) return;
+
+    try {
+      setIsWakingUp(true);
+      // We just ping the root or /docs to see if it responds
+      const res = await fetch(baseUrl, { mode: 'no-cors' });
+      setServerReady(true);
+    } catch (e) {
+      console.log("Server is still booting up...");
+    } finally {
+      setIsWakingUp(false);
+    }
+  };
+
+  wakeServer();
+}, []);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -85,14 +114,21 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
     setFinalReport("");
     setStatus("analyzing");
 
-    // Logic to handle ws:// vs wss://
-  const isDeploy = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'deployment';
+   const isDeploy = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'deployment';
+  
+  // Use the NEXT_PUBLIC_ version of your variables
   const rawUrl = isDeploy 
     ? process.env.NEXT_PUBLIC_BACKEND_URL 
-    : process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL;
+    : process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL || "http://localhost:8000";
 
-  // Convert http/https to ws/wss
-  const wsUrl = rawUrl?.replace(/^http/, 'ws') + "/ws";
+  // Prevent the 'undefined' error string
+  if (!rawUrl || rawUrl.includes('undefined')) {
+    console.warn("Waiting for environment variables...");
+    return;
+  }
+
+  const cleanUrl = rawUrl.replace(/\/$/, "");
+  const wsUrl = cleanUrl.replace(/^http/, 'ws') + "/ws";
 
   const ws = new WebSocket(wsUrl);
   socketRef.current = ws;
@@ -245,6 +281,14 @@ export function AnalysisSection({ query }: AnalysisSectionProps) {
 
   return (
     <>
+    {isWakingUp && !serverReady && (
+      <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 animate-pulse">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <p className="text-sm font-medium">
+          Waking up the research engine... This can take 30-60 seconds on the free plan.
+        </p>
+      </div>
+    )}
     <LimitModal isOpen={showLimitModal} />
     <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-5 md:p-8 lg:p-12">
       
