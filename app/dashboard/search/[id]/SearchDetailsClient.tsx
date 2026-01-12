@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { BookOpen, Calendar, ExternalLink, Loader2, FileText } from 'lucide-react';
 import ReactMarkdown from "react-markdown";
 
+
 export default function SearchDetailsClient({ id }: { id: string }) {
 
     const [data, setData] = useState<any>(null);
