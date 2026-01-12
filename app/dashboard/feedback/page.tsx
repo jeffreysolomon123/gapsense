@@ -103,7 +103,7 @@ export default function FeedbackPage() {
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                     placeholder="Dr. Alex Rivera"
-                                    className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                                    className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
                                 />
                             </div>
 
@@ -117,7 +117,7 @@ export default function FeedbackPage() {
                                     value={formData.institution}
                                     onChange={(e) => setFormData({...formData, institution: e.target.value})}
                                     placeholder="e.g. Stanford University"
-                                    className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                                    className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
                                 />
                             </div>
 
@@ -131,7 +131,7 @@ export default function FeedbackPage() {
                                     value={formData.domain}
                                     onChange={(e) => setFormData({...formData, domain: e.target.value})}
                                     placeholder="e.g. Molecular Biology / LLMs"
-                                    className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                                    className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
                                 />
                             </div>
 
@@ -142,7 +142,7 @@ export default function FeedbackPage() {
                                 <select 
                                     value={formData.occupation}
                                     onChange={(e) => setFormData({...formData, occupation: e.target.value})}
-                                    className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                                    className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
                                 >
                                     <option value="" disabled>Select Role</option>
                                     <option value="PhD Researcher">PhD / Graduate Researcher</option>
@@ -166,7 +166,7 @@ export default function FeedbackPage() {
                                 <select 
                                     value={formData.feedback_type}
                                     onChange={(e) => setFormData({...formData, feedback_type: e.target.value})}
-                                    className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                                    className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
                                 >
                                     <option value="Bug Report">Bug Report</option>
                                     <option value="Feature Request">Feature Request</option>
@@ -208,7 +208,7 @@ export default function FeedbackPage() {
                                 value={formData.message}
                                 onChange={(e) => setFormData({...formData, message: e.target.value})}
                                 placeholder="Please describe the gap or issue in detail. For data accuracy, mention specific papers if possible..."
-                                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all resize-none"
+                                className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all resize-none"
                             />
                         </div>
                     </div>

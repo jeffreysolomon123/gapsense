@@ -2,16 +2,14 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { 
+  Zap, 
+  Mail, 
+  Lock, 
+  Loader2, 
+  ChevronRight, 
+  ShieldCheck 
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -38,7 +36,6 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -49,62 +46,97 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
+      <div className="max-w-[450px] w-full mx-auto">
+        {/* Header Section */}
+        <header className="mb-8 text-center">
+          {/* <div className="inline-flex items-center gap-2 text-[#215E61] mb-3 bg-[#215E61]/5 px-4 py-1.5 rounded-full">
+            <ShieldCheck size={16} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Access</span>
+          </div> */}
+          <h1 className="text-3xl font-extrabold text-[#1a3a3a] mb-2">Welcome Back</h1>
+          <p className="text-slate-500 text-sm">Enter your credentials to access the GapSense engine.</p>
+        </header>
+
+        <div className="bg-white border border-[#215E61]/10 rounded-md p-8 shadow-sm">
+          <form onSubmit={handleLogin} className="space-y-6">
+            
+            {/* Email Input */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#215E61]/60 px-1">
+                <Mail size={12} /> Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="researcher@university.edu"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+              />
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+
+            {/* Password Input */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#215E61]/60">
+                  <Lock size={12} /> Password
+                </label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-[10px] font-bold text-[#215E61] uppercase tracking-tighter hover:opacity-70 transition-opacity"
+                >
+                  Forgot?
+                </Link>
+              </div>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-3 rounded-md flex items-center gap-2 font-medium">
+                <Zap size={14} fill="currentColor" />
+                {error}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#215E61] h-10 text-white py-4 rounded-md font-bold flex items-center justify-center gap-2 hover:bg-[#1a4a4d] transition-all shadow-lg shadow-[#215E61]/10 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <>
+                  Login <ChevronRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Footer Link */}
+          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+            <p className="text-slate-500 text-sm">
+              New to the platform?{" "}
               <Link
                 href="/auth/sign-up"
-                className="underline underline-offset-4"
+                className="text-[#215E61] font-bold underline underline-offset-4 hover:text-[#1a4a4d]"
               >
-                Sign up
+                Create an account
               </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

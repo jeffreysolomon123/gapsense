@@ -101,7 +101,7 @@ export default function RequestSearchesPage() {
                             value={formData.topic}
                             onChange={(e) => setFormData({...formData, topic: e.target.value})}
                             placeholder="e.g. LLM Reasoning Gaps in Healthcare"
-                            className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#215E61]/20 transition-all"
+                            className="w-full bg-[#F9FBFB] border text-[#181818] border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#215E61]/20 transition-all"
                         />
                     </div>
 
@@ -116,7 +116,7 @@ export default function RequestSearchesPage() {
                             value={formData.purpose}
                             onChange={(e) => setFormData({...formData, purpose: e.target.value})}
                             placeholder="Briefly explain why you need more searches (e.g. Dissertation research, Market analysis...)"
-                            className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#215E61]/20 transition-all resize-none"
+                            className="w-full text-[#181818] bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#215E61]/20 transition-all resize-none"
                         />
                     </div>
 
