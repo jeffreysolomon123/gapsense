@@ -12,7 +12,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#F9FBFB] text-[#1a3a3a]">
+    <main className="min-h-screen flex flex-col bg-[#F9FBFB]  text-[#1a3a3a]">
       {/* --- Navigation --- */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-[#215E61]/10 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center h-16 px-4 md:px-6">
