@@ -290,7 +290,7 @@ const [serverReady, setServerReady] = useState(false);
       </div>
     )}
     <LimitModal isOpen={showLimitModal} />
-    <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-5 md:p-8 lg:p-12">
+    <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-2 md:p-8 lg:p-12">
       
       <div className="max-w-4xl mx-auto">
         <header className="mb-10 text-center md:text-left">

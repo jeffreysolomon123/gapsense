@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Plus, Settings, PanelLeft, LogOut, Sparkles, Gift } from 'lucide-react';
+import { MessageSquare, Plus, Settings, PanelLeft, LogOut, Sparkles, Gift, Heart   } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ export default function Sidebar() {
     // Fixed: Define logic for active states outside of the JSX
     const isSettingsActive = pathname === '/dashboard/settings';
     const isRequestActive = pathname === '/dashboard/request-searches';
+    const isFeedbackActive = pathname === '/dashboard/feedback';
 
     const slideTransition = {
         type: "tween" as const,
@@ -171,6 +173,14 @@ export default function Sidebar() {
                         >
                             <Gift  size={14} />
                             <span>Request More Searches</span>
+                        </Link>
+                        <Link 
+                            href="/dashboard/feedback" 
+                            className={`sm:hidden flex items-center gap-3 px-3 py-2 mb-2 text-[12px] rounded-md transition-all 
+                            ${isFeedbackActive ? 'bg-white/10 text-white border-l-2 border-white' : 'text-white/50 hover:text-white hover:bg-white/5 border-l-2 border-transparent'}`}
+                        >
+                            <Heart  size={14} />
+                            <span>Feedback</span>
                         </Link>
                         <Link 
                             href="/dashboard/settings" 

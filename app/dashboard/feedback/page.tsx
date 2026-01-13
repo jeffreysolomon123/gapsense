@@ -76,7 +76,7 @@ export default function FeedbackPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F9FBFB] p-4 md:p-8 lg:p-12 overflow-y-auto">
+        <div className="min-h-screen bg-[#F9FBFB] p-0 md:p-8 lg:p-12 overflow-y-auto ">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10 text-left">
                     <div className="inline-flex items-center gap-2 text-[#215E61] mb-3 py-1.5 rounded-full">

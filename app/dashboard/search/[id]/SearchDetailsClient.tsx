@@ -44,7 +44,7 @@ export default function SearchDetailsClient({ id }: { id: string }) {
     );
 
     return (
-        <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-5 md:p-8 lg:p-12 overflow-y-auto">
+        <div className="min-h-screen bg-[#F9FBFB] text-slate-800 p-1 md:p-8 lg:p-12 overflow-y-auto w-full">
             <div className="max-w-4xl mx-auto">
                 {/* Breadcrumb-style Header */}
                 {/* <div className="flex items-center gap-2 text-[#215E61]/60 text-xs font-bold uppercase tracking-widest mb-6">

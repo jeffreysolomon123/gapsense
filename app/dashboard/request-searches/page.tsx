@@ -52,7 +52,7 @@ export default function RequestSearchesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F9FBFB] p-4 md:p-8 lg:p-12 overflow-y-auto">
+        <div className="min-h-screen bg-[#F9FBFB] p-0 md:p-8 lg:p-12 overflow-y-auto">
             <div className="max-w-5xl mx-auto">
                 {/* <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#215E61] text-xs font-bold uppercase tracking-widest mb-8 hover:opacity-70 transition-opacity">
                     <ChevronLeft size={14} /> Back
