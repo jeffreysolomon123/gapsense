@@ -119,7 +119,7 @@ export function SignUpForm({
                 required
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
-                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                className="w-full bg-[#F9FBFB] border text-[#215E61] border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
               />
             </div>
 
