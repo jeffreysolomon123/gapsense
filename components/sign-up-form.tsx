@@ -66,7 +66,7 @@ export function SignUpForm({
                   src={logo}
                   alt="GapSense Logo"
                 />
-              <span className="text-lg md:text-xl font-black ">GapSense</span>
+              <span className="text-lg md:text-xl font-black text-[#215E61]">GapSense</span>
             </Link>
           </div>
           
@@ -89,7 +89,7 @@ export function SignUpForm({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                className="w-full bg-[#F9FBFB] border text-[#215E61] border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
               />
             </div>
 
@@ -104,7 +104,7 @@ export function SignUpForm({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#F9FBFB] border border-[#215E61]/10 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
+                className="w-full bg-[#F9FBFB] border text-[#215E61] border-[#215E61]/10 rounded-md px-4 py-3 text-[#215E61]/60 text-sm focus:outline-none focus:ring-1 focus:ring-[#215E61] transition-all"
               />
             </div>
 
