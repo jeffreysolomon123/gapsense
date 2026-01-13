@@ -18,8 +18,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GapSense | Accelerate Your Research",
     description: "Stop searching, start discovering. Use AI to map out research trends and find your next thesis topic.",
-    images: ["/og-image.png"], // Make sure to add an image in your public folder later
-    type: "website",
+    images: [{
+        url: "https://github.com/user-attachments/assets/4501a95e-5264-434b-b69a-97ef98f5d9d7", // Must be an absolute URL
+        width: 1200,
+        height: 630,
+        alt: "GapSense Research Analysis Preview",
+      }], 
+      locale: "en_US",
+      type: "website",
   },
 };
 
